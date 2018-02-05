@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.harrold.harrold_subbook2.MainActivity">
+
+    <TextView
+        android:id="@+id/total_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Your Monthly Total: "
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/title_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Your Subscriptions"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <ListView
+        android:id="@+id/subs_list"
+        android:layout_width="match_parent"
+        android:layout_height="362dp" />
+
+    <Button
+        android:id="@+id/add_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add New Sub" />
+
+    <Button
+        android:id="@+id/temp_clear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="temp clear" />
+
+</LinearLayout>
