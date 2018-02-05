@@ -8,6 +8,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+/**
+ * AddActivity
+ *
+ * Version 1.0
+ *
+ * 2018-Feb-5
+ */
+
 public class AddActivity extends AppCompatActivity {
 
     private EditText nameEditText;
@@ -27,9 +35,14 @@ public class AddActivity extends AppCompatActivity {
 
         Button saveButton = (Button) findViewById(R.id.save_button);
 
+        /**
+         * On click of the save button, this will collect information in
+         *  EditTexts and package it for sending back to MainActivity.
+         */
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /* collect EditText information */
                 String subName = nameEditText.getText().toString();
                 String subDate = dateEditText.getText().toString();
                 String subCharge = chargeEditText.getText().toString();
@@ -37,6 +50,7 @@ public class AddActivity extends AppCompatActivity {
 
                 Intent returnIntent = new Intent();
 
+                /* package strings to send back to MainActivity */
                 returnIntent.putExtra("name", subName);
                 returnIntent.putExtra("date", subDate);
                 returnIntent.putExtra("charge", subCharge);

@@ -1,11 +1,8 @@
 package com.example.harrold.harrold_subbook2;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -28,6 +25,20 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+/**
+ * MainActivity
+ *
+ * Version 1.0
+ *
+ * Created by Harrold on 2018-02-05.
+ *
+ * This activity keeps information of main list and displays it on ListView
+ *  - ArrayList<Sub> subsList - this is the main list where all Sub
+ *                              objects will be kept
+ *  - ArrayAdapter<Sub> subsAdapter - used by ListView to display
+ *                              information from subsList
+ */
+
 public class MainActivity extends AppCompatActivity {
 
     private ListView oldSubsList;
@@ -35,10 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String tempName;
     private String tempDate;
-    private float tempCharge;
+    private String tempCharge;
     private String tempComment;
-    private int latestEditIndex;
-    private float monthlyTotal;
 
     private ArrayList<Sub> subsList;
     private ArrayAdapter<Sub> subsAdapter;
@@ -54,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
 
         tempReset();
 
+        /**
+         *  On click of the clearButton, subList will be cleared
+         *  *NOT required for assignment.
+         */
         clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /**
+         * On click of the adder button, AddActivity will open,
+         *  this will wait for result_code and call onActivityResult
+         */
         adderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -73,31 +90,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /**
+         * On click of individual item in the ListView, this will bundle information
+         *  about the specific Sub object and open EditActivity will open,
+         *  this will wait for result_code and call onActivityResult.
+         */
         oldSubsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                 String fillerName = subsList.get(i).getSubName();
                 String fillerDate = subsList.get(i).getSubDate();
-                float fillerCharge = subsList.get(i).getSubCharge();
+                String fillerCharge = subsList.get(i).getSubCharge();
                 String fillerComment = subsList.get(i).getSubComment();
 
-                latestEditIndex = i;
                 Intent editIntent = new Intent(MainActivity.this, EditActivity.class);
 
                 Bundle bundle = new Bundle();
+                bundle.putInt("pos", i);
                 bundle.putString("fillerName", fillerName);
                 bundle.putString("fillerDate", fillerDate);
-                bundle.putFloat("fillerCharge", fillerCharge);
+                bundle.putString("fillerCharge", fillerCharge);
                 bundle.putString("fillerComment", fillerComment);
 
                 editIntent.putExtra("fillerBundle", bundle);
 
-                startActivityForResult(editIntent, 2, bundle);
+                startActivityForResult(editIntent, 2);
 
             }
         });
     }
+
 
     @Override
     protected void onStart() {
@@ -109,6 +132,9 @@ public class MainActivity extends AppCompatActivity {
         oldSubsList.setAdapter(subsAdapter);
     }
 
+    /**
+     * loads saved information from FILENAME
+     */
     private void loadFromFile() {
 
         try {
@@ -124,11 +150,12 @@ public class MainActivity extends AppCompatActivity {
 
         } catch(FileNotFoundException e) {
             subsList = new ArrayList<Sub>();
-        } catch(IOException e) {
-            throw new RuntimeException();
         }
     }
 
+    /**
+     * recognizes changes in the list and saves
+     */
     private void saveInFile() {
         try {
 
@@ -146,16 +173,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Waits for result_code from other Activity and acts accordingly.
+     *
+     * @param requestCode
+     * @param resultCode - specified int sent by other Activity
+     * @param data - bundle of data
+     */
     /* https://stackoverflow.com/questions/10407159/how-to-manage-startactivityforresult-on-android 2018-02-05 */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == 1) {
             tempReset();
-            tempName = (String) data.getExtras().get("name");
-            tempDate = (String) data.getExtras().get("date");
-            tempCharge = (Float) data.getExtras().get("charge");
-            tempComment = (String) data.getExtras().get("comment");
+           // tempName = (String) data.getExtras().get("name");
+            tempName = getStringFromBundle("name", data);
+            tempDate = getStringFromBundle("date", data);
+            tempCharge = getStringFromBundle("charge", data);
+            tempComment = getStringFromBundle("comment", data);
+            int pos = data.getExtras().getInt("posBack");
 
             if(resultCode == Activity.RESULT_OK){
 
@@ -166,30 +202,48 @@ public class MainActivity extends AppCompatActivity {
 
             } else if(resultCode == 2) {
 
-                subsList.get(latestEditIndex).setName(tempName);
-                subsList.get(latestEditIndex).setDate(tempDate);
-                subsList.get(latestEditIndex).setCharge(tempCharge);
-                subsList.get(latestEditIndex).setSubComment(tempComment);
+                subsList.get(pos).setName(tempName);
+                subsList.get(pos).setDate(tempDate);
+                subsList.get(pos).setCharge(tempCharge);
+                subsList.get(pos).setSubComment(tempComment);
 
                 subsAdapter.notifyDataSetChanged();
                 saveInFile();
 
             } else if(resultCode == 3) {
-                subsList.remove(latestEditIndex);
+                subsList.remove(pos);
             }
         }
     }
 
+    /**
+     * Empties temp string identifiers
+     */
     private void tempReset() {
-        tempName = "";
-        tempDate = "";
-        tempCharge = 0;
-        tempComment = "";
+        String empty = "";
+        tempName = empty;
+        tempDate = empty;
+        tempCharge = empty;
+        tempComment = empty;
     }
 
-    private void updateTotal() {
-        for (int i = 0; i < subsList.size(); i++) {
-            monthlyTotal += subsList.get(i).getSubCharge();
+    /**
+     * Unbundles data and returns the String that goes with specified dataTag.
+     *
+     * @param dataTag - String parameter that is paired with desired information
+     * @param data - bundle of data
+     *
+     * @return String from data that is paired with dataTags
+     */
+    private String getStringFromBundle(String dataTag, Intent data) {
+        String newString;
+
+        try {
+            newString = data.getExtras().getString(dataTag);
+        } catch(NullPointerException e) {
+            newString = "";
         }
+
+        return newString;
     }
 }

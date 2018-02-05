@@ -9,6 +9,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 /**
+ * EditActivity
+ *
+ * Version 1.0
+ *
  * Created by Harrold on 2018-02-05.
  */
 
@@ -25,11 +29,13 @@ public class EditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
+        /* Identify EditTexts */
         nameEditText2 = (EditText) findViewById(R.id.name_edit_text2);
         dateEditText2 = (EditText) findViewById(R.id.date_edit_text2);
         chargeEditText2 = (EditText) findViewById(R.id.charge_edit_text2);
         commentEditText2 = (EditText) findViewById(R.id.comment_edit_text2);
 
+        /* Fetch information sent through Intent - Not working */
         Bundle bundleGet = getIntent().getExtras();
         if (bundleGet != null) {
             nameEditText2.setText((String) bundleGet.get("fillerName"));
@@ -41,6 +47,10 @@ public class EditActivity extends AppCompatActivity {
         Button saveEditButton = (Button) findViewById(R.id.save_button2);
         Button deleteButton = (Button) findViewById(R.id.delete_button);
 
+        /**
+         * On click of the saveEditButton, bundles the Strings in the EditTexts
+         *  and sends it back to MainActivity for processing.
+         */
         saveEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -48,9 +58,11 @@ public class EditActivity extends AppCompatActivity {
                 String subDate = dateEditText2.getText().toString();
                 String subCharge = chargeEditText2.getText().toString();
                 String subComment = commentEditText2.getText().toString();
+                int pos = getIntent().getExtras().getInt("pos");
 
                 Intent returnEditIntent = new Intent();
 
+                returnEditIntent.putExtra("posBack", pos);
                 returnEditIntent.putExtra("name", subName);
                 returnEditIntent.putExtra("date", subDate);
                 returnEditIntent.putExtra("charge", subCharge);
@@ -62,10 +74,17 @@ public class EditActivity extends AppCompatActivity {
             }
         });
 
+        /**
+         *  On click of the deleteButton, this will pass an int by Intent back to
+         *      MainActivity.s
+         */
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int pos = getIntent().getExtras().getInt("pos");
+
                 Intent returnEditIntent = new Intent();
+                returnEditIntent.putExtra("posBack", pos);
 
                 EditActivity.this.setResult(3, returnEditIntent);
 
