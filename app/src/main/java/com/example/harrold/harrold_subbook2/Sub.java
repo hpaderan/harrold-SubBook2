@@ -33,7 +33,7 @@ public class Sub {
      * @return, returns block of String.
      */
     public String toString() {
-        return (subName + "\t\t$" + subCharge + "\n"
+        return (subName + "\t\t$ " + subCharge + "\n"
                 + subDate + "\n" + subComment);
     }
 
